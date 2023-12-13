@@ -16,6 +16,75 @@
   Once you've implemented the logic, test your code by running
 */
 
-class Calculator {}
+class Calculator {
+  
+  
+  constructor() {
+    this.result = 0;  
+  }
+    
+  add(num) {
+    //result = result + num;
+    this.result = this.result + num;
+  }
+
+  subtract(num){
+    this.result = this.result-num;
+  }
+
+  multiply(num){
+    this.result = this.result * num;
+  }
+
+  divide(num)
+  {
+    if(num == 0)
+    {
+      throw new Error('Division by 0 is not possible');
+    }
+    else
+    {
+      this.result = this.result/num;
+    }
+  }
+
+  clear()
+  {
+    this.result = 0;
+  }
+
+  getResult()
+  {
+    return this.result;
+  }
+
+  calculate(s)
+  {
+    var str = s.replace(/\s/g, "");
+    var len = str.length;
+    for(var i=0;i<len;i++)
+    {
+      if((str[i]>='0' && str[i]<='9') || (str[i]=='+') || (str[i]=='-') || (str[i]=='*') || (str[i]=='-') || (str[i]=='/') || (str[i] == ')') || (str[i]=='(') || (str[i]=='.'))
+      {
+        continue;
+      }
+      else
+      {
+        throw new Error('Error');
+      }
+    }
+
+    let p = eval(str);
+    if(p == NaN || p==Infinity)
+    {
+      throw new Error('Error');
+    }
+    else
+    {
+      this.result = eval(str);
+    }
+     
+  }
+}
 
 module.exports = Calculator;
