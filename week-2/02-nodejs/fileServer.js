@@ -17,5 +17,71 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+const folder = './files';
+
+app.get("/files", function(req,res){
+
+
+  var directoryContent = [];
+
+  fs.readdir(folder, (err, files) => {
+
+    if (err) 
+    {
+      return res.status(500).json({
+        msg: "Internal Server Error"
+      });
+    }
+    else 
+    {
+
+      files.forEach(file => {
+        directoryContent.push(file);
+      });
+      res.status(200);
+      res.send(directoryContent);
+      return res;
+    } 
+  });
+
+
+});
+
+
+app.get("/file/:filename", function(req,res){
+   
+    const filepath = folder + "/" + req.params.filename;
+    
+    if(fs.existsSync(filepath))
+    {
+      fs.readFile(filepath, 'utf8', function(err, data){ 
+      
+        if (err) 
+        {
+          return res.status(500).json({
+            msg: "Internal Server Error"
+          });
+        }
+        else 
+        {
+          res.status(200);
+          res.send(data);
+          return res;
+        } 
+      }); 
+    }
+    else
+    {
+      
+      res.status(404);
+      res.send("File not found");
+    
+    }
+})
+
+app.get("*",function(req,res){
+  res.status(404);
+  res.send("Route not found");
+});
 
 module.exports = app;

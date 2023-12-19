@@ -43,7 +43,125 @@
   const bodyParser = require('body-parser');
   
   const app = express();
+  const fs = require('fs');
   
   app.use(bodyParser.json());
   
+  const dataPath = './todos.json';
+
+  app.get("/todos",function(req,res)
+  {
+    const jsonData = fs.readFileSync(dataPath);
+    res.status(200);
+    res.json(JSON.parse(jsonData));
+  })
+
+  app.get("/todos/:id",function(req,res)
+  {
+    var existTodo = JSON.parse(fs.readFileSync(dataPath));
+    const uid = req.params.id;
+    const jsonData = fs.readFileSync(dataPath);
+    const jsonObj = JSON.parse(jsonData);
+    const requiredRecord =  jsonObj.find(todo => todo.id == uid)
+    
+    let resp = existTodo.find((item) => {
+      return item.id == uid;
+    });
+
+    if(resp === undefined)
+    {
+      return res.status(404).json({
+        msg: "Not found"
+      });
+    }
+
+    else
+    {
+      res.status(200);
+      res.json(requiredRecord);
+      return res;
+    }
+  })
+
+  app.post("/todos",function(req,res){
+    var existTodo = JSON.parse(fs.readFileSync(dataPath));
+    //const jsonObj = JSON.parse(jsonData);
+    const newtodoId = Math.floor(100000 + Math.random() * 900000)
+ 
+    existTodo.push({id: newtodoId, title: req.body.title, description: req.body.description, completed: req.body.completed});
+    const stringifyData = JSON.stringify(existTodo)
+    fs.writeFileSync(dataPath, stringifyData)
+    res.status(201);
+    res.send({id: newtodoId});
+  })
+
+  app.delete("/todos/:id",function(req,res)
+  {
+    var existTodo = JSON.parse(fs.readFileSync(dataPath));
+    const uid = req.params.id;
+    
+    let resp = existTodo.find((item) => {
+      return item.id == uid;
+    });
+
+    if(resp === undefined)
+    {
+      return res.status(404).json({
+        msg: "Not found"
+      });
+    }
+
+    else
+    {
+      const filtered_todo = existTodo.filter(el => el.id != uid);
+      const stringifyData = JSON.stringify(filtered_todo)
+      fs.writeFileSync(dataPath, stringifyData)
+      return res.status(200).json({
+        msg: "Record deleted successfully"
+      });
+    }
+
+  })
+
+  app.put("/todos/:id",function(req,res)
+  {
+    var existTodo = JSON.parse(fs.readFileSync(dataPath));
+    const uid = req.params.id;
+    const { title, description, completed } = req.body;
+    
+    let resp = existTodo.find((item) => {
+      return item.id == uid;
+    });
+
+    if(resp === undefined)
+    {
+      return res.status(404).json({
+        msg: "Not found"
+      });
+    }
+
+    else
+    {
+      if (title) resp.title = title;
+      if (description) resp.description = description;
+      if (completed) resp.completed = completed;
+      const stringifyData = JSON.stringify(existTodo);
+      fs.writeFileSync(dataPath, stringifyData);
+      return res.status(200).json({
+        msg: "Record updated successfully"
+      });
+    }
+
+  })
+  
+  app.get("/todos/*",function(req,res){
+    return res.status(404).json({
+      msg: "Route not found"
+    });
+  })
+  
+  // app.listen(3000, ()=>{
+  //   console.log("listening at port:3000")
+  // }) 
+
   module.exports = app;
