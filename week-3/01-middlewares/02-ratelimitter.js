@@ -16,11 +16,26 @@ setInterval(() => {
     numberOfRequestsForUser = {};
 }, 1000)
 
-app.get('/user', function(req, res) {
+function userMiddleWare(req,res,next)
+{
+  const user = req.headers['user-id'];
+  numberOfRequestsForUser[user] = (numberOfRequestsForUser[user] || 0)  + 1
+
+  if(numberOfRequestsForUser[user] > 5)
+  {
+    return res.status(404).json({
+      msg: "You cannot make more than 5 requests"
+    })
+  }
+
+  next();
+}
+
+app.get('/user', userMiddleWare, function(req, res) {
   res.status(200).json({ name: 'john' });
 });
 
-app.post('/user', function(req, res) {
+app.post('/user', userMiddleWare,function(req, res) {
   res.status(200).json({ msg: 'created dummy user' });
 });
 
