@@ -7,7 +7,16 @@
     let todoState = [];
     let oldTodoState = [];
 
-    function addTodoToDom() {
+    function addTodoToDom(todo) {
+      const grandparent =  document.getElementById("todos");
+      const parent = document.createElement("div");
+      parent.setAttribute("id",todo.id);
+      const first = document.createElement("div");
+      first.innerText = todo.title;
+      const second = document.createElement("div");
+      second.innerHTML = todo.descripton;
+      const third = document.createElement("button");
+      third.innerText = "mark as done";
       
     }
 
